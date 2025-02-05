@@ -7,7 +7,13 @@ Start by cloning the repository. Inside, download the following executable and r
 https://github.com/folivetti/srtree/releases/download/v2.0.1.0/egraphGP-2.0.1.0-Linux-ghc-9.10.1
 
 
-Then install the required python packages by running:
+Then run:
+```sh
+chmod +x eggp
+```
+
+
+Finally install the required python packages by running:
 
 ```sh
 pip install -r requirements.txt
