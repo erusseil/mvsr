@@ -13,16 +13,43 @@ alphabet = list(string.ascii_uppercase)
 
 
 class MvSR():
+    
+    """Initiate a MvSR analysis linked to a folder of views. Default values are suited for simple problem and should be tuned to the user specific challenges.
+
+    Parameters
+    ----------
+
+    data_path: str
+        Path to the folder containing the views (in .csv)
+    max_length: int
+        Maximum size of the equation to generate. 
+        Optional. Default is 20.
+    n_params: int
+        Maximum number of parameters of the equation to generate.
+        Optional. Default is 5.
+    generations: int
+        Number of generation for the genetic symbolic regression evolution.
+        Optional. Default is 200.
+    pop_size: int
+        Number of individual per generation for the genetic symbolic regression evolution.
+        Optional. Default is 100.
+    opt_retries: int
+        Number of run of the optimizer on each example for each generated function. Increasing this number may largely improve the quality of the results for certain equations, such as equations based on exp, for which minimization is more challenging. However it will result in an increase of the computation time. 
+        Optional. Default is 5.
+    operations: str
+        Operators allowed for the equation to generate.
+        Optional. Default is 'add,sub,mul,div,exp,log,sqrt,abs'
+    """
 
     default_max_length = 20
-    default_pop_size = 100
-    default_generations = 200
     default_n_params = 5
+    default_generations = 200
+    default_pop_size = 100
     default_opt_retries = 5
     default_operations = 'add,sub,mul,div,exp,log,sqrt,abs'
 
-    def __init__(self, data_path, max_length=None, pop_size=None,
-                 generations=None, n_params=None, opt_retries=None, operations=None):
+    def __init__(self, data_path, max_length=None, n_params=None, generations=None,
+                 pop_size=None, opt_retries=None, operations=None):
 
         self.data_path = data_path
         self.views_path = []
