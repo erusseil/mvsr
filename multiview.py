@@ -100,7 +100,8 @@ class MvSR():
     
         for idx in range(len(self.raw_results)):
             params = self.raw_results['theta'].iloc[idx]
-            data = pd.read_csv(self.views_path[idx])
+            data_path = self.views_path[idx]
+            data = pd.read_csv(data_path)
             X, Y = np.array(data.iloc[:, 0]), np.array(data.iloc[:, -1])
             parrays = np.array(params.split(sep=';')).astype(float)
         
@@ -108,8 +109,24 @@ class MvSR():
             plt.scatter(X, Y)
             
             Xplot = np.linspace(X.min(), X.max(), 200)
-            plt.plot(Xplot, self.model(Xplot, *parrays))
+            plt.plot(Xplot, self.model(Xplot, *parrays), label=MvSR.format_labels(parrays), color='red', alpha=0.8)
+            plt.title(data_path)
+            plt.legend()
 
+    @staticmethod
+    def format_labels(params, rounding=3):
+        
+        label = ''
+        for i in range(len(params)):
+            value = params[i]
+            name = alphabet[i]
+            label += f"{name}={round(value, rounding)}"
+
+            if i!=len(params)-1:
+                label += "\n"
+
+        return label
+        
 
     @staticmethod
     def check_n_param_used(expression):
