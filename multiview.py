@@ -79,9 +79,6 @@ class MvSR():
 
         output_string = subprocess.check_output(command, shell=True, text=True)
         
-        # To remove after fix:
-        output_string = output_string.replace('t[:, ', 't[')
-        
         # Replace temporary the "[:" from the numpy expression to allow the split on the correct :
         output_string = output_string.replace('[:,', '$')
         output_table = pd.DataFrame([line.split(sep=',') for line in output_string[:-2].split(sep='\n')])
