@@ -70,73 +70,83 @@ class MvSR():
         self.operations = MvSR.default_operations if operations is None else operations
 
         self.raw_results = None
+        self.numpy_expression = None
         self.expression = None
         self.model = None
 
     def run(self):
-        command = f'./eggp -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --distribution MSE --opt-retries {self.opt_retries} --moo'
+        command = f'./eggp -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --opt-retries {self.opt_retries} --moo --to-numpy --simplify'
 
         output_string = subprocess.check_output(command, shell=True, text=True)
+        
+        # To remove after fix:
+        output_string = output_string.replace('t[:, ', 't[')
+        
+        # Replace temporary the "[:" from the numpy expression to allow the split on the correct :
+        output_string = output_string.replace('[:,', '$')
         output_table = pd.DataFrame([line.split(sep=',') for line in output_string[:-2].split(sep='\n')])
+
+        # Replace back :
+        output_table.iloc[1:, 1] = output_table.iloc[1:, 1].apply(lambda x: x.replace('$', '[:,'))
+
         output_table.columns = output_table.iloc[0]
         output_table.drop(index=0, inplace=True)
-        self.raw_results = output_table
-        self.convert_raw_results_to_expression()
-        self.convert_expression_to_function()
-        print(self.expression)
 
-    def convert_raw_results_to_expression(self):
+        self.raw_results = output_table
+        self.numpy_expression = self.raw_results['Expression'].iloc[0]
+        self.generate_visual_expression()
+
+        model = MvSR.make_function(self.numpy_expression)
+        self.model = model 
+
+
+    @staticmethod
+    def make_function(expression):
+        def func(x, t):
+            return eval(expression)
+        return func
+
+    def generate_visual_expression(self):
 
         if type(self.raw_results)==type(None):
             print("Must run MvSR first")
 
         else:
-            all_expressions = []
-            for idx in range(len(self.raw_results)):
-                expression = self.raw_results['Expression'].iloc[idx]
-                for idx2, theta in enumerate(self.raw_results['theta'].iloc[idx].split(sep=";")):
-                    if theta != '':
-                        expression = expression.replace(theta, alphabet[idx2])
-        
-                all_expressions += [expression]
-            
-            if len(set(all_expressions)) == 1:
-                self.expression = sp.simplify(all_expressions[0])
-            
-            
-            else:
-                print("Careful, parsing probably went wrong")
-                print(all_expressions)
+            clean_expression = self.numpy_expression
+            n_params_used = len(self.raw_results['theta'].iloc[0].split(sep=';'))
 
-    def convert_expression_to_function(self):
+            for i in range(n_params_used):
+                clean_expression = clean_expression.replace(f't[{i}]', alphabet[i])
 
-        if type(self.expression) == type(None):
-            print("Must convert_raw_results_to_expression first")
+            data_path = self.views_path[0]
+            n_dim = np.shape(pd.read_csv(data_path))[1] - 1
 
-        else:
-            used_params = alphabet[:MvSR.check_n_param_used(self.expression)]
-            func = sp.lambdify(
-                        ["x0"] + used_params,
-                        str(self.expression),
-                        modules=[{"Exp": np.exp, "Log": np.log, "Sin": np.sin, "Abs": np.abs, "Sqrt": np.sqrt}, "numpy"],
-                    )
+            for i in range(n_dim):
+                clean_expression = clean_expression.replace(f'x[:, {i}]', f'X{i}')
 
-            self.model = func
+            self.expression = clean_expression
+            print(self.expression)
+
+
 
     def plot_all_fits(self):
-    
+
         for idx in range(len(self.raw_results)):
             params = self.raw_results['theta'].iloc[idx]
             data_path = self.views_path[idx]
             data = pd.read_csv(data_path)
+
+            if np.shape(data)[1] != 2:
+                print("Careful, the plot is adapted for 2D datasets. Only the first X axis will displayed.")
+                
             X, Y = np.array(data.iloc[:, 0]), np.array(data.iloc[:, -1])
             parrays = np.array(params.split(sep=';')).astype(float)
         
             plt.figure()
             plt.scatter(X, Y)
-            
+
             Xplot = np.linspace(X.min(), X.max(), 200)
-            plt.plot(Xplot, self.model(Xplot, *parrays), label=MvSR.format_labels(parrays), color='red', alpha=0.8)
+            plt.plot(Xplot, self.model(np.array([Xplot]).T, parrays), label=MvSR.format_labels(parrays), color='red', alpha=0.8)
             plt.title(data_path)
             plt.legend()
 
@@ -153,19 +163,4 @@ class MvSR():
                 label += "\n"
 
         return label
-        
-
-    @staticmethod
-    def check_n_param_used(expression):
-
-        n_used = 0
-        loop = True
-        while loop:
-            if alphabet[n_used] in str(expression):
-                n_used += 1
-        
-            else:
-                loop=False
-
-        return n_used
         
