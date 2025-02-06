@@ -28,7 +28,8 @@ import multiview as mv
 MvSR = mv.MvSR("datasets/", max_length=10, pop_size=100, generations=100, n_params=3)
 MvSR.run()
 MvSR.plot_all_fits()
-print(MvSR.raw_results)
+result_table = MvSR.raw_results
 ```
 
-As shown in the example, you simply need to provide the path to a folder containing all the views for a given problem. They should be csv files with a specific formating. The columns should have a header indicating their name. The first columns correspond to your explanatory variables (X0, X1, ...) while the last column corresponds to the response variable (Y).
+As shown in the example, you simply need to provide the path to a folder containing all the views for a given problem. They should be csv files with a specific formating. The columns should have a header indicating their name. The first columns correspond to your explanatory variables (X0, X1, ...) while the last column corresponds to the response variable (Y). In the code snippet, ```MvSR.plot_all_fits()``` offers a fast way to have an overview of the model's ability to fit the views. However you can find all the outputs of the symbolic regression run inside `MvSR.raw_results`.
+
