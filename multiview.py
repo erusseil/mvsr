@@ -146,6 +146,7 @@ class MvSR():
             plt.plot(Xplot, self.model(np.array([Xplot]).T, parrays), label=MvSR.format_labels(parrays), color='red', alpha=0.8)
             plt.title(data_path)
             plt.legend()
+        plt.show()
 
     @staticmethod
     def format_labels(params, rounding=3):
