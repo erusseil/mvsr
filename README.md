@@ -18,7 +18,8 @@ Finally install the required python packages by running:
 pip install -r requirements.txt
 ```
 
-You are ready to use eggp MvSR. You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views:
+You are ready to use eggp MvSR. 
+You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views:
 
 
 ```sh
