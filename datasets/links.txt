@@ -1,27 +1,3 @@
-CAT2003: https://www.gein.noa.gr/services/cat.html
-
-Japan: wwweic.eri.u-tokyo.ac.jp/CATALOG/junec/
-
-North carolina: https://ncedc.org/ncedc/catalog-search.html
-Your search parameters are:
-
-    start_time=1984/01/01,00:00:00
-    end_time=2005/12/31,00:00:00
-    minimum_latitude=34.5
-    maximum_latitude=42
-    minimum_longitude=-126.0
-    maximum_longitude=-117.76
-    etype=E
-    rflag=A,F,H,I
-    system=selected
-    format=nccsv 
-
-South carolina: http://service.scedc.caltech.edu/eq-catalogs/date_mag_loc.php
-Default parameters from 01/01/1984 to 31/12/2002
-
-Switzerland (CH): http://www.seismo.ethz.ch/en/earthquakes/switzerland/all-earthquakes/?tableA.Year.sorting=asc&tableA.page=5&tableA.records=5000#tableA-anchor
-Need to make some horrible copy paste of the table from 1991 to 2008
-
 Galaxy dataset: https://www.aanda.org/articles/aa/full_html/2020/11/aa37079-19/aa37079-19.html
 
 Mikaelis-Mendis: https://www.tandfonline.com/doi/full/10.3109/14756366.2012.688039#d1e627 
