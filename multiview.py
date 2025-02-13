@@ -41,6 +41,7 @@ class MvSR():
         Optional. Default is 'add,sub,mul,div,exp,log,sqrt,abs'
     """
 
+    eggp_path = "/home/etru7215/Documents/mvsr_datasets/eggp/"
     default_max_length = 20
     default_n_params = 5
     default_generations = 200
@@ -73,9 +74,14 @@ class MvSR():
         self.numpy_expression = None
         self.expression = None
         self.model = None
+        self.params = None
 
     def run(self):
-        command = f'./eggp -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --opt-retries {self.opt_retries} --moo --to-numpy --simplify'
+
+        if not os.path.isfile(self.eggp_path + "/eggp"):
+            raise ValueError("MvSR.eggp_path is incorrect, file not found. You must indicate the absolute path of the 'eggp' executable")
+        
+        command = f'{self.eggp_path}/eggp -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --opt-retries {self.opt_retries} --moo --to-numpy --simplify'
 
         output_string = subprocess.check_output(command, shell=True, text=True)
         
@@ -94,7 +100,8 @@ class MvSR():
         self.generate_visual_expression()
 
         model = MvSR.make_function(self.numpy_expression)
-        self.model = model 
+        self.model = model
+        self.params = np.array([np.array((output_table['theta'].iloc[i]).split(sep=';')).astype(float) for i in range(len(output_table))])
 
 
     @staticmethod
@@ -129,7 +136,6 @@ class MvSR():
     def plot_all_fits(self):
 
         for idx in range(len(self.raw_results)):
-            params = self.raw_results['theta'].iloc[idx]
             data_path = self.views_path[idx]
             data = pd.read_csv(data_path)
 
@@ -137,7 +143,7 @@ class MvSR():
                 print("Careful, the plot is adapted for 2D datasets. Only the first X axis will displayed.")
                 
             X, Y = np.array(data.iloc[:, 0]), np.array(data.iloc[:, -1])
-            parrays = np.array(params.split(sep=';')).astype(float)
+            parrays = self.params[idx]
         
             plt.figure()
             plt.scatter(X, Y)
