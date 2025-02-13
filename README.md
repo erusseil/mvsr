@@ -18,7 +18,7 @@ Install the required python packages by running:
 pip install -r requirements.txt
 ```
 
-Finally, inside ```multiview.py``` file, edit the eggp_path variable and insert the absolute path of the eggp executable.
+Finally, inside ```multiview.py``` file, edit the ```eggp_path``` variable and insert the absolute path of the eggp executable.
 
 
 You are ready to use eggp MvSR. 
