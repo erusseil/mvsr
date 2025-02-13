@@ -12,11 +12,14 @@ chmod +x eggp
 ```
 
 
-Finally install the required python packages by running:
+Install the required python packages by running:
 
 ```sh
 pip install -r requirements.txt
 ```
+
+Finally, inside ```multiview.py``` file, edit the eggp_path variable and insert the absolute path of the eggp executable.
+
 
 You are ready to use eggp MvSR. 
 You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views. **From the repository root (important because it calls the eggp executable)**, run:
