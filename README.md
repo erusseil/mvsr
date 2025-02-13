@@ -22,7 +22,7 @@ Finally, inside ```multiview.py``` file, edit the eggp_path variable and insert 
 
 
 You are ready to use eggp MvSR. 
-You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views. **From the repository root (important because it calls the eggp executable)**, run:
+You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views. Run:
 
 
 ```sh
