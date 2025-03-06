@@ -53,9 +53,11 @@ class MvSR():
                  pop_size=None, opt_retries=None, operations=None):
 
         self.data_path = data_path
+        all_files = os.listdir(data_path)
+        all_files.sort()
         self.views_path = []
         
-        for file in os.listdir(data_path):
+        for file in all_files:
             if file.endswith(".csv"):
                 self.views_path += [os.path.join(data_path, file)]
 
@@ -130,7 +132,6 @@ class MvSR():
 
             self.expression = clean_expression
             print(self.expression)
-
 
 
     def plot_all_fits(self):
