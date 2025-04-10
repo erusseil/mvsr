@@ -1,0 +1,48 @@
+
+# This workflow will install Python dependencies, build the package and then build the documentation.
+
+name: Build documentation
+
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install eggp
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libnlopt0
+        mkdir -p $HOME/.local/bin
+        curl -L -o $HOME/.local/bin/eggp https://github.com/folivetti/srtree/releases/download/v2.0.1.2/eggp-2.0.1.2-Linux-ghc-9.10.1
+        chmod +x $HOME/.local/bin/eggp
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        eggp --help
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        python -m pip install --upgrade pip
+        if [ -f docs/requirements.txt ]; then pip install -r docs/requirements.txt; fi
+        pip install .
+    - name: Install notebook requirements
+      run: |
+        sudo apt-get install pandoc
+    - name: Build docs
+      run: |
+        sphinx-build -T -E -b html -d docs/build/doctrees ./docs docs/build/html
