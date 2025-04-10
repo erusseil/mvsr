@@ -41,7 +41,7 @@ class MvSR():
         Optional. Default is 'add,sub,mul,div,exp,log,sqrt,abs'
     """
 
-    eggp_path = "/home/etru7215/Documents/mvsr_datasets/eggp/"
+    eggp_path = "eggp"
     default_max_length = 20
     default_n_params = 5
     default_generations = 200
@@ -50,7 +50,7 @@ class MvSR():
     default_operations = 'add,sub,mul,div,exp,log,sqrt,abs'
 
     def __init__(self, data_path, max_length=None, n_params=None, generations=None,
-                 pop_size=None, opt_retries=None, operations=None):
+                 pop_size=None, opt_retries=None, operations=None, eggp_path=None):
 
         self.data_path = data_path
         all_files = os.listdir(data_path)
@@ -78,12 +78,15 @@ class MvSR():
         self.model = None
         self.params = None
 
-    def run(self):
+        if eggp_path is not None:
+            self.eggp_path = eggp_path
+        try:
+            subprocess.check_output(f'{self.eggp_path} --help', shell=True, text=True)
+        except Exception as e:
+            raise ValueError(f"MvSR.eggp_path '{self.eggp_path}' is incorrect, file not found. You must indicate the absolute path of the 'eggp' executable or put eggp to one of your $PATH folders") from e
 
-        if not os.path.isfile(self.eggp_path + "/eggp"):
-            raise ValueError("MvSR.eggp_path is incorrect, file not found. You must indicate the absolute path of the 'eggp' executable")
-        
-        command = f'{self.eggp_path}/eggp -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --opt-retries {self.opt_retries} --moo --to-numpy --simplify'
+    def run(self):
+        command = f'{self.eggp_path} -d "{self.views_str}" -s {self.max_length} --nPop {self.pop_size} -g {self.generations} --non-terminals {self.operations} --number-params {self.n_params} --opt-retries {self.opt_retries} --moo --to-numpy --simplify'
 
         output_string = subprocess.check_output(command, shell=True, text=True)
         

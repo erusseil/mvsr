@@ -1,0 +1,45 @@
+
+# This workflow runs pre-commit hooks on pushes and pull requests to main
+# to enforce coding style. To ensure correct configuration, please refer to:
+#  https://lincc-ppt.readthedocs.io/en/latest/practices/ci_precommit.html
+name: Run pre-commit hooks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  pre-commit-ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install eggp
+      run: |
+       sudo apt-get update
+       sudo apt-get install -y libnlopt0
+       mkdir -p $HOME/.local/bin
+        curl -L -o $HOME/.local/bin/eggp https://github.com/folivetti/srtree/releases/download/v2.0.1.2/eggp-2.0.1.2-Linux-ghc-9.10.1
+        chmod +x $HOME/.local/bin/eggp
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        eggp --help
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        python -m pip install --upgrade pip
+        pip install .[dev]
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - uses: pre-commit/action@v3.0.1
+      with:
+        extra_args: --all-files --verbose
+      env:
+        SKIP: "check-lincc-frameworks-template-version,no-commit-to-branch,check-added-large-files,validate-pyproject,sphinx-build,pytest-check"
+    - uses: pre-commit-ci/lite-action@v1.1.0
+      if: failure() && github.event_name == 'pull_request' && github.event.pull_request.draft == false
