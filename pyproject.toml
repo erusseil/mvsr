@@ -16,10 +16,10 @@ classifiers = [
 dynamic = ["version"]
 requires-python = ">=3.9"
 dependencies = [
-    "matplotlib",
-    "numpy",
-    "pandas",
-    "sympy",
+    "matplotlib>=3.9.2",
+    "numpy>=1.26.4",
+    "pandas>=2.2.2",
+    "sympy>=1.13.2",
 ]
 
 [project.urls]
