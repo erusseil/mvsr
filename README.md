@@ -1,18 +1,17 @@
-This github is a python wrapper of the Symbolic Regression method based equality graph, eggp, proposed by the paper ["Improving Genetic Programming for Symbolic Regression with Equality Graphs"](https://arxiv.org/abs/2501.17848). This implementation includes a multi-view approach of the data, as explained in the paper ["Multi-View Symbolic Regression"](https://arxiv.org/abs/2402.04298). The goal of MvSR is to discover parametric equations able to describe an ensemble of datasets, rather than generating a single solution to a single dataset. This wrapper is focused around the MvSR aspect of eggp. Very few steps are required to use the method.
+This github is a python wrapper of the Symbolic Regression method based equality graph, eggp, proposed by the paper ["Improving Genetic Programming for Symbolic Regression with Equality Graphs"](https://arxiv.org/abs/2501.17848). This implementation includes a multi-view approach of the data, as explained in the paper ["Multi-View Symbolic Regression"](https://arxiv.org/abs/2402.04298). The goal of MvSR is to discover parametric equations able to describe an ensemble of datasets, rather than generating a single solution to a single dataset. This wrapper is focused around the MvSR aspect of eggp.
 
 
-Start by cloning the repository. Inside, download the following executable and rename the file to ```eggp```
+Start by cloning the repository:
 
-
-https://github.com/folivetti/srtree/releases/download/v2.0.1.2/eggp-2.0.1.2-Linux-ghc-9.10.1
-
-Then run:
 ```sh
-chmod +x eggp
+git clone https://github.com/erusseil/mvsr.git
 ```
 
-Finally, inside ```multiview.py``` file, edit the ```eggp_path``` variable and insert the absolute path of the eggp executable.
-
+And install it:
+```sh
+cd mvsr
+pip install .
+```
 
 You are ready to use eggp MvSR. 
 You can test it by running the simple test provided, which recovers a polynomial function (f(X) = AX² + BX + C) from a set of three views. Run:
