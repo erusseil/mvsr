@@ -11,13 +11,6 @@ Then run:
 chmod +x eggp
 ```
 
-
-Install the required python packages by running:
-
-```sh
-pip install -r requirements.txt
-```
-
 Finally, inside ```multiview.py``` file, edit the ```eggp_path``` variable and insert the absolute path of the eggp executable.
 
 
