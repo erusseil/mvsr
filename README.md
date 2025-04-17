@@ -1,3 +1,6 @@
+WARNING: This github constitutes a frozen version of the eggp code used for Russeil et al. 2025 analysis. A more recent and updated eggp python wrapper is available [here] (https://github.com/folivetti/pyeggp). It is available through PyPi and can be installed via a simple ```pip install``` command.
+
+
 This github is a python wrapper of the Symbolic Regression method based equality graph, eggp, proposed by the paper ["Improving Genetic Programming for Symbolic Regression with Equality Graphs"](https://arxiv.org/abs/2501.17848). This implementation includes a multi-view approach of the data, as explained in the paper ["Multi-View Symbolic Regression"](https://arxiv.org/abs/2402.04298). The goal of MvSR is to discover parametric equations able to describe an ensemble of datasets, rather than generating a single solution to a single dataset. This wrapper is focused around the MvSR aspect of eggp.
 
 
@@ -11,6 +14,14 @@ And install it:
 ```sh
 cd mvsr
 pip install .
+```
+You must also install eggp manually:
+```
+sudo apt-get update
+sudo apt-get install -y libnlopt0
+mkdir -p $HOME/.local/bin
+curl -L -o $HOME/.local/bin/eggp https://github.com/folivetti/srtree/releases/download/v2.0.1.2/eggp-2.0.1.2-Linux-ghc-9.10.1
+chmod +x $HOME/.local/bin/eggp
 ```
 
 You are ready to use eggp MvSR. 
