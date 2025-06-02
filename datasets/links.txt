@@ -1,8 +1,0 @@
-Galaxy dataset: https://www.aanda.org/articles/aa/full_html/2020/11/aa37079-19/aa37079-19.html
-
-Mikaelis-Mendis: https://www.tandfonline.com/doi/full/10.3109/14756366.2012.688039#d1e627 
-Need to copy paste a matlab code from the paper ..
-
-Fluid mechanics: https://github.com/EpistasisLab/pmlb/issues/170
-
-Supernovae: https://github.com/erusseil/MvSR-analysis/tree/main/real_data/supernovae
