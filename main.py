@@ -14,7 +14,7 @@ numpy_parser = {'exp':'np.exp', 'log':'np.log', 'abs':'np.abs',
                '^':'**', 'pow':"**", 'safe_log':'np.log', 'square':'np.square',
                "sqrt":"np.sqrt"}
 
-main_path = "/home/etru7215/Documents/MvSR/mvsr_datasets/datasets/"
+main_path = "/home/etru7215/Documents/MvSR/mvsr_git/mvsr/datasets/"
 datasets = {'linear':main_path + "linear/",
            'biology':main_path + "biology/",
            'galaxies':main_path + "galaxies/",
@@ -107,7 +107,7 @@ class MvSR_eggp():
 
         import sys
         import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/eggp/"))
+        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/eggp/"))
         import multiview as mv
 
 
@@ -153,7 +153,7 @@ class MvSR_pyoperon():
 
         import sys
         import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
+        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/pyoperon/"))
         import analysis as pyop
         import mvsr as mvsr
 
@@ -182,7 +182,7 @@ class MvSR_pyoperon():
 
         import sys
         import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
+        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/pyoperon/"))
         import analysis as pyop
         import mvsr as mvsr
 
