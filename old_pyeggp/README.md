@@ -6,7 +6,7 @@ git clone https://github.com/erusseil/mvsr.git
 
 And install it:
 ```sh
-cd mvsr
+cd mvsr/old_pyeggp
 pip install .
 ```
 You must also install eggp manually:
