@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from os import listdir
 from os.path import isfile, join
 from os import listdir
 import os
@@ -14,7 +13,7 @@ numpy_parser = {'exp':'np.exp', 'log':'np.log', 'abs':'np.abs',
                '^':'**', 'pow':"**", 'safe_log':'np.log', 'square':'np.square',
                "sqrt":"np.sqrt"}
 
-main_path = "/home/etru7215/Documents/MvSR/mvsr_git/mvsr/datasets/"
+main_path = "/home/etru7215/Documents/MvSR/mvsr_datasets/datasets/"
 datasets = {'linear':main_path + "linear/",
            'biology':main_path + "biology/",
            'galaxies':main_path + "galaxies/",
@@ -90,7 +89,7 @@ class MvSR_eggp():
     default_pop_size = 100
     default_generation = 100
     default_opt_retries = 3
-    default_operators = 'add,sub,mul,div,exp,log,sqrt,abs,pow,square'
+    default_operators = 'add,sub,mul,div,exp,log,sqrt,abs,power,square'
 
     def __init__(self, data_path, config, train_points, test_points, seed=0):
 
@@ -99,24 +98,42 @@ class MvSR_eggp():
         self.max_params = config['max_params']
         self.train_points = train_points
         self.test_points = test_points
-        self.temp_path = temp_train_files(data_path, self.train_points)
-        self.to_input = self.temp_path
+        self.to_input = self.from_path_to_input()
         self.seed = seed
 
+    def from_path_to_input(self):
+     
+        onlyfiles = find_csv_filenames(self.data_path)
+        X, y = [], []
+
+        for idx, file in enumerate(onlyfiles):
+            table = pd.read_csv(self.data_path + file)
+            Xadd = table.iloc[self.train_points[idx], :-1].astype('float')
+            X.append(np.array(Xadd))
+            y.append(np.array(table.iloc[self.train_points[idx], -1]).astype('float'))
+
+        return X, y
+        
     def run(self):
+        
+        import eggp
 
-        import sys
-        import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/eggp/"))
-        import multiview as mv
+        X, y = self.to_input
+        MvSR = eggp.EGGP(maxSize=self.max_size, nPop=self.default_pop_size, nonterminals=MvSR_eggp.default_operators,
+                       gen=self.default_generation, nParams=self.max_params, optIter=self.default_opt_retries)
 
+    
+        MvSR.fit_mvsr(X, y)
+        pareto = MvSR.results
+        
+        best_solution = pareto.iloc[np.argmin(pareto['maxloss'])]['id']
+        model, clean_expression = MvSR.get_model(best_solution)
+        best_pareto = pareto[pareto['id']==best_solution]
 
-        MvSR = mv.MvSR(self.to_input, max_length=self.max_size, pop_size=self.default_pop_size,
-                       generations=self.default_generation, n_params=self.max_params, opt_retries=self.default_opt_retries)
-
-        MvSR.run()
-        shutil.rmtree(self.temp_path)
-        return MvSR.expression, MvSR.numpy_expression, MvSR.params, MvSR.model
+        numpy_expression = best_pareto['Numpy'].iloc[0]
+        params = np.array([np.array((best_pareto['theta'].iloc[i]).split(sep=';')).astype(float) for i in range(len(best_pareto))])
+        
+        return clean_expression, numpy_expression, params, model
 
 
 class MvSR_pyoperon():
@@ -153,7 +170,7 @@ class MvSR_pyoperon():
 
         import sys
         import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/pyoperon/"))
+        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
         import analysis as pyop
         import mvsr as mvsr
 
@@ -182,7 +199,7 @@ class MvSR_pyoperon():
 
         import sys
         import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_git/mvsr/pyoperon/"))
+        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
         import analysis as pyop
         import mvsr as mvsr
 
@@ -405,8 +422,8 @@ if __name__ == "__main__":
     
     # To run an analysis: 'python main.py dataset method'
     
-    dataset = sys.argv[1] # linear
-    method = sys.argv[2] # eggp
+    dataset = sys.argv[1]
+    method = sys.argv[2]
     
     n_run = 10
     test_percent = 0.2
@@ -414,7 +431,7 @@ if __name__ == "__main__":
     methods = {'PySR':MvSR_PySR, 'pyoperon':MvSR_pyoperon,
                'PhySO':MvSR_PhySO, 'eggp':MvSR_eggp}
     
-    configs = {'small_simple':{'max_size':15, 'max_params':2},
+    configs = {'small_simple':{'max_size':15, 'max_params':2},}
                'small_complex':{'max_size':15, 'max_params':4},
                'big_simple':{'max_size':30, 'max_params':2},
                'big_complex':{'max_size':30, 'max_params':4}}
@@ -439,8 +456,6 @@ if __name__ == "__main__":
             
             test_points = [np.random.choice(k, max(1, int(test_percent*k))) for k in lengths]
             train_points = [np.setdiff1d(np.arange(lengths[k]), test_points[k]) for k in range(len(test_points))]
-
-            print(test_points)
 
             analysis = general_MvSR(methods[method], datasets[dataset], configs[config], train_points, test_points, seed=idx)
             analysis.run()
