@@ -5,12 +5,26 @@ import pickle
 import matplotlib.pyplot as plt
 import sympy as sp
 from IPython.display import display, Math
+import re
+import sympy
 
 
 configs = ['small_simple', 'small_complex', 'big_simple', 'big_complex']
-methods = ['PySR', 'eggp', 'PhySO', 'operon']
+methods = ['PySR', 'eggp', 'PhySO', 'operon', 'operon_increased']
 datasets = ['supernovae', 'galaxies', 'graphs', 'fluid', 'biology']
 
+
+def count_nodes(expression):
+    node_count = 0
+    for node in sympy.preorder_traversal(expression):
+        node_count += 1
+
+    return node_count
+
+def sizeOf(e):
+    pattern = r'\[.*?,?\s*(\d+)\s*\]'
+    sympy_expr = sympy.sympify(re.sub(pattern, r'\1', e).replace("np.",""))
+    return count_nodes(sympy_expr)
 
 def summary_tables(gather, path="results/"):
 
@@ -34,6 +48,12 @@ def summary_tables(gather, path="results/"):
                 elif gather == 'chi2_test':
                     result.loc[config, method] = max(best_run['chi2_test'])
 
+                elif gather == 'mean_chi2':
+                    result.loc[config, method] = np.mean(best_run['chi2'])
+
+                elif gather == 'mean_chi2_test':
+                    result.loc[config, method] = np.mean(best_run['chi2_test'])
+
                 elif gather == 'time':
                     result.loc[config, method] = df['computation_time'].mean()
 
@@ -44,7 +64,7 @@ def summary_tables(gather, path="results/"):
                     result.loc[config, method] = best_run['numpy_expression']
 
                 else:
-                    print("Choose between chi2, chi2_test, time, expression, or parameters")
+                    print("Choose between chi2, chi2_test, time, expression, mean_chi2, mean_chi2_test, or parameters")
 
         results[dataset] = result
 
@@ -97,7 +117,7 @@ def plot_best_solutions():
 
     for dataset in datasets:
         
-        best_config, best_method = overall_best(chi2s[dataset])
+        best_config, best_method = overall_best(chi2s_test[dataset])
         
         model = main.make_function(expressions[dataset].loc[best_config, best_method])
         best_parameters = parameters[dataset].loc[best_config, best_method]
@@ -115,12 +135,14 @@ def plot_all_bests(dataset, xlabel='', ylabel='', title='', method_pos=(.98, .03
 
     fig, axes = plt.subplots(2,2, figsize=(12, 6), )
     
-    for idx, method in enumerate(methods):
+    #for idx, method in enumerate(methods[:-1]):['PySR', 'eggp', 'PhySO', 'operon', 'operon_increased']
+    for idx, method in enumerate(['PySR', 'eggp', 'PhySO', 'operon']):
 
         ax = axes.flat[idx]
         
         best_idx = int(bests[idx])
         expression = expressions[method].iloc[best_idx]
+        print(expression)
         chi2 = chi2s[method].iloc[best_idx]
         chi2_test = chi2s_test[method].iloc[best_idx]
 
@@ -132,6 +154,8 @@ def plot_all_bests(dataset, xlabel='', ylabel='', title='', method_pos=(.98, .03
         
         whowasbest = expressions[method].index[best_idx]
         print(method, ":", whowasbest)
+
+
         
         _ = generate_latex(expressions[method][whowasbest], save=f"{dataset}_{method}_{whowasbest}")
 
@@ -215,7 +239,7 @@ def plot_for_experts(dataset, show_n=12):
     plt.rcParams['text.usetex'] = True
     
     
-    for idx1, method in enumerate(methods):
+    for idx1, method in enumerate(methods[:-1]):
         for idx2, config in enumerate(configs):
                 
             model = main.make_function(expressions[dataset].loc[config, method])

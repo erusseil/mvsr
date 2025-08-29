@@ -11,7 +11,8 @@ import time
 numpy_parser = {'exp':'np.exp', 'log':'np.log', 'abs':'np.abs',
                'sin':'np.sin', 'cos':'np.cos', 'tan':'np.tan',
                '^':'**', 'pow':"**", 'safe_log':'np.log', 'square':'np.square',
-               "sqrt":"np.sqrt"}
+               "sqrt":"np.sqrt", "Exp":"np.exp", "Log":"np.log",
+               "Pow":"**", "Square":"np.square", "Sqrt":"np.sqrt", "Abs":"np.abs"}
 
 main_path = "/home/etru7215/Documents/MvSR/mvsr_datasets/datasets/"
 datasets = {'linear':main_path + "linear/",
@@ -21,6 +22,7 @@ datasets = {'linear':main_path + "linear/",
            'supernovae':main_path + "supernovae/",
            'fluid':main_path + "fluid_mechanics/"}
 
+seconds_timeout = 60 * 30
 
 def make_function(expression):
     def func(x, t):
@@ -42,7 +44,10 @@ def chi2(y_true, y_pred, n_freedom):
 
 def str_to_function(expr_str, params, x_symbols=['x0']):
 
-    # First convert it to a numpy str
+    # Convert function names
+    for element in numpy_parser:
+        expr_str = expr_str.replace(element, numpy_parser[element])
+    
     # Replace parameters
     for idx, p in enumerate(params):
         expr_str = expr_str.replace(p, f't[{idx}]')
@@ -51,10 +56,6 @@ def str_to_function(expr_str, params, x_symbols=['x0']):
     for idx, x in enumerate(x_symbols):
         expr_str = expr_str.replace(x, f'x[:, {idx}]')
 
-    # Convert function names
-    for element in numpy_parser:
-        expr_str = expr_str.replace(element, numpy_parser[element])
-    
     return expr_str, make_function(expr_str)
 
 def find_csv_filenames(path_to_dir):
@@ -67,8 +68,8 @@ def find_csv_filenames(path_to_dir):
         
 class general_MvSR():
     def __init__(self, algo, data_path, config, train_points, test_points, seed=0):
-        if not algo in [MvSR_eggp, MvSR_pyoperon, MvSR_PySR, MvSR_PhySO]:
-            message = "The algorithm indicated is invalid. Should be: eggp, PySR, pyoperon or PhySO"
+        if not algo in [MvSR_eggp, MvSR_operon, MvSR_PySR, MvSR_PhySO]:
+            message = "The algorithm indicated is invalid. Should be: eggp, PySR, operon or PhySO"
             raise ValueError(message)
 
         self.data_path = data_path
@@ -136,12 +137,12 @@ class MvSR_eggp():
         return clean_expression, numpy_expression, params, model
 
 
-class MvSR_pyoperon():
+class MvSR_operon():
     
     default_maxD = 10
-    default_pop_size = 1000
-    default_generation = 5000
-    default_opt_retries = 10
+    default_pop_size = 100
+    default_generation = 100
+    default_opt_retries = 3
 
     # Is defined in the __init__ because it requires an import
     default_operators = None
@@ -150,11 +151,11 @@ class MvSR_pyoperon():
 
         import pyoperon as Operon
         # Always includes the 4 basic operators:
-        MvSR_pyoperon.default_operators = Operon.NodeType.Exp|Operon.NodeType.Log|Operon.NodeType.Pow|Operon.NodeType.Square|Operon.NodeType.Sqrt|Operon.NodeType.Abs
+        MvSR_operon.default_operators = Operon.NodeType.Exp|Operon.NodeType.Log|Operon.NodeType.Pow|Operon.NodeType.Square|Operon.NodeType.Sqrt|Operon.NodeType.Abs
 
         self.data_path = data_path
 
-        # Because parameters are not included in the size of pyoperon equation we only take two thirds of the max size.
+        # Because parameters are not included in the size of operon equation we only take two thirds of the max size.
         # It not a perfect solution but it is often a good rule of thumb
         
         self.max_size = int(2/3 * config['max_size'])
@@ -180,7 +181,7 @@ class MvSR_pyoperon():
         agg_best_str, all_best_str = mvsr.MultiViewSR(self.data_path, maxL=self.max_size, maxD=self.default_maxD,
                                                       generations=self.default_generation, pop_size=self.default_pop_size,
                                                       opt_retries=self.default_opt_retries, seed=self.seed,
-                                                      verbose=False, explicit_params=False)
+                                                      OperationSet=self.default_operators, verbose=False, explicit_params=False)
 
         # This first conversion replaces floats with parameters.
         func, func_str, initial_guess = pyop.convert_string_to_func(agg_best_str, 1)
@@ -188,8 +189,11 @@ class MvSR_pyoperon():
         
         # The second conversion ensures that the same format is applied to all MvSR methods. Not necessary per say.
         np_str, std_func = str_to_function(func_str, param_names, x_symbols=[f"X{k+1}" for k in range(dimX)])
-        
-        params = self.reoptimize_parameters(func, self.data_path, initial_guess)
+
+        if initial_guess != {}:
+            params = self.reoptimize_parameters(func, self.data_path, initial_guess)
+        else:
+            params = []
         shutil.rmtree(self.temp_path)
 
         return func_str, np_str, params, std_func
@@ -215,9 +219,9 @@ class MvSR_pyoperon():
 
 class MvSR_PySR():
 
-    default_pop_size = 30
-    default_generation = 30
-    default_opt_retries = 2
+    default_pop_size = 100
+    default_generation = 100
+    default_opt_retries = 3
     default_operators_unary = ["exp", "abs", "square", "sqrt", "log"]
     default_operators_binary = ["+", "*", "-", "/", "^"]
 
@@ -269,6 +273,7 @@ class MvSR_PySR():
             optimizer_nrestarts=self.default_opt_retries,
             binary_operators=self.default_operators_binary,
             unary_operators=self.default_operators_unary,
+            timeout_in_seconds=seconds_timeout,
             random_state=self.seed,
             deterministic=True,
             parallelism='serial',
@@ -288,7 +293,7 @@ class MvSR_PySR():
 
 class MvSR_PhySO():
 
-    default_generation = 10
+    default_generation = 100
     default_opt_retries = 3
     default_operators = ["add", "sub", "mul", "div", "log", "exp", "pow", 'abs', "n2", "sqrt"]
     default_batch_size = 100
@@ -342,7 +347,7 @@ class MvSR_PhySO():
                                                    do_prints = False,
                                                    draw_all_progs_fit=False)
 
-        config = physo.config.config_mvsr0.config_mvsr0
+        config = physo.config.config_mvsr0_test.config_mvsr0_test
         config['learning_config']['max_time_step'] = self.max_size
         config['learning_config']['batch_size'] = self.default_batch_size
         config['free_const_opti_args']['method_args']['lbfgs_func_args']['max_iter'] = self.default_opt_retries
@@ -428,10 +433,10 @@ if __name__ == "__main__":
     n_run = 10
     test_percent = 0.2
     
-    methods = {'PySR':MvSR_PySR, 'pyoperon':MvSR_pyoperon,
+    methods = {'PySR':MvSR_PySR, 'operon':MvSR_operon,
                'PhySO':MvSR_PhySO, 'eggp':MvSR_eggp}
     
-    configs = {'small_simple':{'max_size':15, 'max_params':2},}
+    configs = {'small_simple':{'max_size':15, 'max_params':2},
                'small_complex':{'max_size':15, 'max_params':4},
                'big_simple':{'max_size':30, 'max_params':2},
                'big_complex':{'max_size':30, 'max_params':4}}
