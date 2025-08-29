@@ -1,4 +1,4 @@
-This github is a frozen version of the analysis performed in Russeil et al. 2025: Exploring Multi -view Symbolic Regression methods in physical sciences. It contains all datasets used for the analysis as well and the scripts to run the analysis and plot the results. In practice, the datasets and MvSR implementation to run on are specified inside `start.sh`. But because, the analysis attempts to compare 4 different codes, we recommand installing four separate python environments that are activated when the corresponding analysis is run.
+This github is a frozen version of the analysis performed in Russeil et al. 2025: Exploring Multi -view Symbolic Regression methods in physical sciences. It contains all datasets used for the analysis as well and the scripts to run the analysis and plot the results. In practice, the datasets and MvSR implementation to run on are specified inside `start.sh`. But because, the analysis attempts to compare 4 different codes, we recommend installing four separate python environments that are activated when the corresponding analysis is run.
 
 1. PySR version 1.3.1
 2. PhySO version 1.1.10
