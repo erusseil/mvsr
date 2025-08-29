@@ -169,10 +169,7 @@ class MvSR_operon():
 
     def run(self):
 
-        import sys
-        import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
-        import analysis as pyop
+        import operon_tools as pyop
         import mvsr as mvsr
 
         files = find_csv_filenames(self.data_path)
@@ -201,10 +198,7 @@ class MvSR_operon():
     @staticmethod
     def reoptimize_parameters(func, path, initial_guess):
 
-        import sys
-        import os
-        sys.path.append(os.path.abspath("/home/etru7215/Documents/MvSR/mvsr_datasets/pyoperon/"))
-        import analysis as pyop
+        import operon_tools as pyop
         import mvsr as mvsr
 
         onlyfiles = find_csv_filenames(path)
