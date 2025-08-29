@@ -2,7 +2,7 @@ This github is a frozen version of the analysis performed in Russeil et al. 2025
 
 1. PySR version 1.3.1
 2. PhySO version 1.1.10
-4. pyoperon MvSR is installed following the instructions: https://github.com/erusseil/MvSR-analysis
-5. eggp version 1.0.6
+3. pyoperon MvSR is installed following the instructions: https://github.com/erusseil/MvSR-analysis
+4. eggp version 1.0.6
 
-The raw results from running the full analysis can be found inside the ```result```. All plots and result exploration can be found inside the ```process_result.ipynb``` notebook. The figures generated here can be found ```inside analysis/plots```. 
+You should be able to specify the method to use and the datasets to process inside ```start.sh``` and run it with: ```sh start.sh```. operon_increased was manually run by modifiying the operon's hyparameters inside the ```main.py``` file. The raw results from running the full analysis can be found inside the ```result```. All plots and result exploration can be found inside the ```process_result.ipynb``` notebook. The figures generated here can be found ```inside analysis/plots```. 
