@@ -10,4 +10,4 @@ You should be able to specify the method to use and the datasets to process insi
 sh start.sh
 ```
 
-operon_increased was manually run by modifiying the operon's hyparameters inside the ```main.py``` file. The raw results from running the full analysis can be found inside the ```result```. All plots and result exploration can be found inside the ```process_result.ipynb``` notebook. The figures generated here can be found ```inside analysis/plots```. 
+operon_increased was manually run by modifiying the operon's hyparameters inside the ```main.py``` file. The raw results from running the full analysis can be found inside the ```result``` folder. All the exploration results can be found inside the ```process_result.ipynb``` notebook. The figures generated here can be found inside ```analysis/plots/```. 
