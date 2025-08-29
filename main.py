@@ -170,7 +170,7 @@ class MvSR_operon():
     def run(self):
 
         import operon_tools as pyop
-        import mvsr as mvsr
+        import operon_mvsr as mvsr
 
         files = find_csv_filenames(self.data_path)
         dimX = np.shape(pd.read_csv(self.data_path+files[0]))[1]-1
@@ -199,7 +199,7 @@ class MvSR_operon():
     def reoptimize_parameters(func, path, initial_guess):
 
         import operon_tools as pyop
-        import mvsr as mvsr
+        import operon_mvsr as mvsr
 
         onlyfiles = find_csv_filenames(path)
 
