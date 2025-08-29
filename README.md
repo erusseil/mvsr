@@ -5,4 +5,4 @@ This github is a frozen version of the analysis performed in Russeil et al. 2025
 4. pyoperon MvSR is installed following the instructions: https://github.com/erusseil/MvSR-analysis
 5. eggp version 1.0.6
 
-The raw results from running the full analysis can be found inside the ```result```. All plots and result exploration can be found inside the '''process_result.ipynb''' notebook. The figures generated here can be found ```inside analysis/plots```. 
+The raw results from running the full analysis can be found inside the ```result```. All plots and result exploration can be found inside the ```process_result.ipynb``` notebook. The figures generated here can be found ```inside analysis/plots```. 
